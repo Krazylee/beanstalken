@@ -58,8 +58,13 @@ defmodule Beanstalken.Response do
   end
 
   # use responses
-  def parse(<<"USING ", rest::binary>>) do
-    parse_string(rest, :using)
+  def parse(<<"USING ", resp::binary>>) do
+    parse_string(resp, :using)
+  end
+
+  # reserve response
+  def parse(<<"RESERVED ", resp::binary>>) do
+    parse_job(resp, :reserved)
   end
 
   def parse(<<"DEADLINE_SOON\r\n", resp::binary>>) do
@@ -79,6 +84,7 @@ defmodule Beanstalken.Response do
     end
   end
 
+
   def parse_body(body) do
     case parse_digits(body) do
       { :ok, length, <<"\r\n", rest::binary>> } ->
@@ -88,6 +94,29 @@ defmodule Beanstalken.Response do
           _ ->  
             :more
         end
+      _ ->
+        :more
+    end
+  end
+
+  def parse_job(body, name) do
+    case parse_id(body) do
+      { :ok, id, rest } ->
+        case parse_body(rest) do
+          { :ok, content, rest2 } ->
+            { :ok, { :reserved, id, content }, rest2 }
+          :more ->
+            :more
+        end
+      :more ->
+        :more
+    end
+  end
+
+  def parse_id(body) do
+    case parse_digits(body) do
+      { :ok, number, <<" ", rest::binary>> } ->
+        { :ok, number, rest }
       _ ->
         :more
     end
