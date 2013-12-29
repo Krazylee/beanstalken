@@ -3,6 +3,7 @@ defmodule BeanstalkenTest do
 
   alias Beanstalken.State
   alias Beanstalken.Response
+  alias Beanstalken.Command
 
   test "beanstalken should connect to beanstalkd" do
     { :ok, pid } = Beanstalken.connect()
@@ -11,7 +12,7 @@ defmodule BeanstalkenTest do
 
   test "handle call" do
     { :ok, pid } = Beanstalken.connect()
-    :gen_server.call(pid, "unknown")
+    :gen_server.call(pid, {:unknown})
   end
 
   test "parse_digits should return the number from a string" do
@@ -33,9 +34,9 @@ defmodule BeanstalkenTest do
   end
 
   test "parse unknown format" do
-    sample_string = "UNKNOWN_FORMAT\r\nrest"
+    sample_string = "UNKNOWN_COMMAND\r\nrest"
     { :ok, type, _ } = Response.parse(sample_string)
-    assert type == :unknown_format
+    assert type == :unknown_command
   end
 
   test "parse bad format" do
@@ -50,9 +51,25 @@ defmodule BeanstalkenTest do
     assert id == 8
   end
 
+  test "parse string" do
+    sample_string = "tube\r\n"
+    { :ok, {name, string}, _ } = Response.parse_string(sample_string, :using)
+    assert string == "tube"
+  end
+
   test "handle put command" do
     { :ok, pid } = Beanstalken.connect()
     :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
   end
 
+  test "handle use command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :using, tube_name } = :gen_server.call(pid, {:use, "test_tube"})
+    assert tube_name == "test_tube"
+  end
+
+  test "to_command_string" do
+    command = {:use, "tube_test"}
+    assert "use tube_test\r\n" == Command.to_command_string(command)
+  end
 end

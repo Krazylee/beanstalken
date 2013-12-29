@@ -32,11 +32,11 @@ defmodule Beanstalken.Response do
     { :ok, :bad_format, resp }
   end
 
-  def parse(<<"UNKNOWN_FORMAT\r\n", resp::binary>>) do
-    { :ok, :unknown_format, resp }
+  def parse(<<"UNKNOWN_COMMAND\r\n", resp::binary>>) do
+    { :ok, :unknown_command, resp }
   end
 
-  # put response
+  # put responses
   def parse(<<"INSERTED ", rest::binary>>) do
     parse_int(rest, :inserted)
   end
@@ -55,6 +55,11 @@ defmodule Beanstalken.Response do
 
   def parse(<<"DRAINING\r\n", resp::binary>>) do
     { :ok, :draining, resp }
+  end
+
+  # use responses
+  def parse(<<"USING ", rest::binary>>) do
+    parse_string(rest, :using)
   end
 
   def parse(<<"DEADLINE_SOON\r\n", resp::binary>>) do
@@ -88,6 +93,18 @@ defmodule Beanstalken.Response do
     end
   end
 
+  def parse_string(body, name) do
+    parse_string(body, name, [])
+  end
+
+  def parse_string(<<"\r\n", rest::binary>>, name, acc) do
+    { :ok, { name, to_string(Enum.reverse(acc)) }, rest }
+  end
+
+  def parse_string(<<first, rest::bytes>>, name, acc) do
+    parse_string(rest, name, [first|acc])
+  end
+
   def parse_int(body, name) do
     case parse_digits(body) do
       { :ok, int, <<"\r\n", rest::binary>>} ->
@@ -109,5 +126,4 @@ defmodule Beanstalken.Response do
         { :ok, list_to_integer(Enum.reverse(acc)), string}
     end
   end
-
 end
