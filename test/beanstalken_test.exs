@@ -90,6 +90,7 @@ defmodule BeanstalkenTest do
 
   test "handle reserve command" do
     { :ok, pid } = Beanstalken.connect()
+    :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
     { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
     assert is_number(id)
   end
@@ -102,6 +103,7 @@ defmodule BeanstalkenTest do
 
   test "handle release command" do
     { :ok, pid } = Beanstalken.connect()
+    :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
     { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
     :released = :gen_server.call(pid, {:release, id, 10, 0})
     :not_found = :gen_server.call(pid, {:release, 99, 10, 0})
@@ -109,6 +111,7 @@ defmodule BeanstalkenTest do
 
   test "handle bury command" do
     { :ok, pid } = Beanstalken.connect()
+    :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
     { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
     :buried = :gen_server.call(pid, {:bury, id, 1})
     :not_found = :gen_server.call(pid, {:bury, 99, 1})
@@ -116,6 +119,7 @@ defmodule BeanstalkenTest do
 
   test "handle touch command" do
     { :ok, pid } = Beanstalken.connect()
+    :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
     { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
     :touched = :gen_server.call(pid, {:touch, id, 1})
     :not_found = :gen_server.call(pid, {:touch, 99, 1})
@@ -131,6 +135,7 @@ defmodule BeanstalkenTest do
 
   test "handle peek command" do
     { :ok, pid } = Beanstalken.connect()
+    :gen_server.call(pid, {:put, [pri: 10, delay: 0, ttr: 100], "test"})
     { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
     { :found, _, _ } = :gen_server.call(pid, {:peek, id})
     :not_found = :gen_server.call(pid, {:peek, 99})

@@ -6,7 +6,7 @@ defmodule Beanstalken.Connection do
   alias Beanstalken.Response
 
   def init({ host, port, timeout }) do
-    case :gen_tcp.connect(host, port, [:binary, {:packet, 0}, {:active, false}]) do
+    case :gen_tcp.connect(host, port, [:binary, {:packet, 0}, {:active, false}], timeout) do
       { :ok, socket } ->
         { :ok, State.new(socket: socket) }
       error ->
