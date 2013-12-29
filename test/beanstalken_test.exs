@@ -124,6 +124,7 @@ defmodule BeanstalkenTest do
   test "handle watching/ignore command" do
     { :ok, pid } = Beanstalken.connect()
     { :watching, count } = :gen_server.call(pid, {:watch, "test_tube"})
+    assert is_number(count)
     { :watching, count } = :gen_server.call(pid, {:ignore, "test_tube"})
     assert is_number(count)
   end
