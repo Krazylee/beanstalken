@@ -89,6 +89,28 @@ defmodule BeanstalkenTest do
   end
 
   test "handle reserve command" do
-    #{ :ok, pid } = Beanstalken.connect()
+    { :ok, pid } = Beanstalken.connect()
+    { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
+    assert is_number(id)
+  end
+
+  test "handle delete command" do
+    { :ok, pid } = Beanstalken.connect()
+    name = :gen_server.call(pid, {:delete, 99})
+    assert name == :not_found
+  end
+
+  test "handle release command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
+    :released = :gen_server.call(pid, {:release, id, 10, 0})
+    :not_found = :gen_server.call(pid, {:release, 99, 10, 0})
+  end
+
+  test "handle bury command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
+    :buried = :gen_server.call(pid, {:bury, id, 1})
+    :not_found = :gen_server.call(pid, {:bury, 99, 1})
   end
 end

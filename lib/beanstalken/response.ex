@@ -37,12 +37,12 @@ defmodule Beanstalken.Response do
   end
 
   # put responses
-  def parse(<<"INSERTED ", rest::binary>>) do
-    parse_int(rest, :inserted)
+  def parse(<<"INSERTED ", resp::binary>>) do
+    parse_int(resp, :inserted)
   end
 
-  def parse(<<"BURIED ", rest::binary>>) do
-    parse_int(rest, :buried)
+  def parse(<<"BURIED ", resp::binary>>) do
+    parse_int(resp, :buried)
   end
 
   def parse(<<"EXPECTED_CRLF\r\n", resp::binary>>) do
@@ -75,6 +75,25 @@ defmodule Beanstalken.Response do
     { :ok, :timed_out, resp }
   end
 
+  # delete responsed
+  def parse(<<"DELETED\r\n", resp::binary>>) do
+    { :ok, :deleted, resp }
+  end
+
+  def parse(<<"NOT_FOUND\r\n", resp::binary>>) do
+    { :ok, :not_found, resp }
+  end
+
+  # release responses
+  def parse(<<"RELEASED\r\n", resp::binary>>) do
+    { :ok, :released, resp }
+  end
+
+  # bury responses
+  def parse(<<"BURIED\r\n", resp::binary>>) do
+    { :ok, :buried, resp }
+  end
+
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
       { :ok, body, rest } ->
@@ -83,7 +102,6 @@ defmodule Beanstalken.Response do
         :more
     end
   end
-
 
   def parse_body(body) do
     case parse_digits(body) do
