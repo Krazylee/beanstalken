@@ -19,6 +19,52 @@ defmodule Beanstalken.Response do
     end
   end
 
+  # errors
+  def parse(<<"OUT_OF_MEMORY\r\n", resp::binary>>) do
+    { :ok, :out_of_memory, resp }
+  end
+
+  def parse(<<"INTERNAL_ERROR\r\n", resp::binary>>) do
+    { :ok, :internal_error, resp }
+  end
+
+  def parse(<<"BAD_FORMAT\r\n", resp::binary>>) do
+    { :ok, :bad_format, resp }
+  end
+
+  def parse(<<"UNKNOWN_FORMAT\r\n", resp::binary>>) do
+    { :ok, :unknown_format, resp }
+  end
+
+  # put response
+  def parse(<<"INSERTED ", rest::binary>>) do
+    parse_int(rest, :inserted)
+  end
+
+  def parse(<<"BURIED ", rest::binary>>) do
+    parse_int(rest, :buried)
+  end
+
+  def parse(<<"EXPECTED_CRLF\r\n", resp::binary>>) do
+    { :ok, :expected_crlf, resp }
+  end
+
+  def parse(<<"JOB_TOO_BIG\r\n", resp::binary>>) do
+    { :ok, :job_too_big, resp }
+  end
+
+  def parse(<<"DRAINING\r\n", resp::binary>>) do
+    { :ok, :draining, resp }
+  end
+
+  def parse(<<"DEADLINE_SOON\r\n", resp::binary>>) do
+    { :ok, :deadline_soon, resp }
+  end
+
+  def parse(<<"TIMED_OUT\r\n", resp::binary>>) do
+    { :ok, :timed_out, resp }
+  end
+
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
       { :ok, body, rest } ->
@@ -37,6 +83,15 @@ defmodule Beanstalken.Response do
           _ ->  
             :more
         end
+      _ ->
+        :more
+    end
+  end
+
+  def parse_int(body, name) do
+    case parse_digits(body) do
+      { :ok, int, <<"\r\n", rest::binary>>} ->
+        { :ok, {name, int}, rest }
       _ ->
         :more
     end
