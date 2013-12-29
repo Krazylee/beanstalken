@@ -127,4 +127,11 @@ defmodule BeanstalkenTest do
     { :watching, count } = :gen_server.call(pid, {:ignore, "test_tube"})
     assert is_number(count)
   end
+
+  test "handle peek command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
+    { :found, _, _ } = :gen_server.call(pid, {:peek, id})
+    :not_found = :gen_server.call(pid, {:peek, 99})
+  end
 end

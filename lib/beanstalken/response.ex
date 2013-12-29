@@ -103,7 +103,11 @@ defmodule Beanstalken.Response do
   def parse(<<"WATCHING ", resp::binary>>) do
     parse_int(resp, :watching)
   end
-  
+
+  # peek responses
+  def parse(<<"FOUND ", resp::binary>>) do
+    parse_job(resp, :found)
+  end
 
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
@@ -133,7 +137,7 @@ defmodule Beanstalken.Response do
       { :ok, id, rest } ->
         case parse_body(rest) do
           { :ok, content, rest2 } ->
-            { :ok, { :reserved, id, content }, rest2 }
+            { :ok, { name, id, content }, rest2 }
           :more ->
             :more
         end
