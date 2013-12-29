@@ -5,7 +5,7 @@ defmodule Beanstalken.Command do
   end
 
   def send(socket, command, data) do
-    :gen_tcp.send(socket, "put 10 0 100 4\r\ntest\r\n")
+    :gen_tcp.send(socket, "#{to_command_string(command)}#{data}\r\n")
   end
 
   def to_command_string(command) when is_tuple(command) do

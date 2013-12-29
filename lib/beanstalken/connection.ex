@@ -30,7 +30,16 @@ defmodule Beanstalken.Connection do
     { :reply, reply, state.update(buffer: new_buffer) }
   end
 
-  def handle_cast({ :push, new }, stack) do
-    { :noreply, [new|stack] }
+  def handle_cast({ :stop }, state) do
+    { :stop, :normal, state }
+  end
+
+  def handle_cast(_msg, state) do
+    { :no_reply, state }
+  end
+
+  def terminate(:normal, socket) do
+    :gen_tcp.close(socket)
+    :ok
   end
 end
