@@ -10,12 +10,17 @@ defmodule Beanstalken.YAML do
             parse_mapping(content)
         end
       _ ->
-        :invalid 
+        body
     end
   end
 
-  def parse_header(<<"---\n", content::binary>>) do
-    { :ok, content } 
+  def parse_header(body) do
+    case body do
+      <<"---\n", content::binary>> ->
+        { :ok, content } 
+      _ ->
+        body
+    end
   end
 
   def parse_sequence(content) do

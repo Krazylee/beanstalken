@@ -21,15 +21,15 @@ defmodule BeanstalkenTest do
   end
 
   test "parse_body should return the response body" do
-    sample_string = "8\r\nresponse\r\nrest"
+    sample_string = "4\r\ntest\r\nrest"
     { :ok, body, _ } = Response.parse_body(sample_string)
-    assert body == "response"
+    assert body == "test"
   end
 
-  test "parse ok response" do
-    sample_string = "OK 8\r\nresponse\r\nrest"
+  test "parse ok yaml response" do
+    sample_string = "OK 11\r\n---\n- test\n\r\nrest"
     { :ok, body, _ } = Response.parse(sample_string)
-    assert body == "response"
+    assert body == ["test"]
   end
 
   test "parse unknown format" do

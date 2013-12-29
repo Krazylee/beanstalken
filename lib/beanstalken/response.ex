@@ -1,4 +1,6 @@
 defmodule Beanstalken.Response do
+
+  alias Beanstalken.YAML
   
   def recv(socket) do
     recv(socket, "")
@@ -121,7 +123,7 @@ defmodule Beanstalken.Response do
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
       { :ok, body, rest } ->
-        { :ok, body, rest }
+        { :ok, YAML.parse(body), rest }
       :more ->
         :more
     end
