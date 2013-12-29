@@ -94,6 +94,17 @@ defmodule Beanstalken.Response do
     { :ok, :buried, resp }
   end
 
+  # touch responses
+  def parse(<<"TOUCHED\r\n", resp::binary>>) do
+    { :ok, :touched, resp }
+  end
+  
+  # watch/ignore responses
+  def parse(<<"WATCHING ", resp::binary>>) do
+    parse_int(resp, :watching)
+  end
+  
+
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
       { :ok, body, rest } ->

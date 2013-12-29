@@ -113,4 +113,18 @@ defmodule BeanstalkenTest do
     :buried = :gen_server.call(pid, {:bury, id, 1})
     :not_found = :gen_server.call(pid, {:bury, 99, 1})
   end
+
+  test "handle touch command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :reserved, id, _ } = :gen_server.call(pid, {:reserve})
+    :touched = :gen_server.call(pid, {:touch, id, 1})
+    :not_found = :gen_server.call(pid, {:touch, 99, 1})
+  end
+
+  test "handle watching/ignore command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :watching, count } = :gen_server.call(pid, {:watch, "test_tube"})
+    { :watching, count } = :gen_server.call(pid, {:ignore, "test_tube"})
+    assert is_number(count)
+  end
 end
