@@ -109,6 +109,15 @@ defmodule Beanstalken.Response do
     parse_job(resp, :found)
   end
 
+  # kick responses
+  def parse(<<"KICKED ", resp::binary>>) do
+    parse_int(resp, :kicked)
+  end
+
+  def parse(<<"PAUSED\r\n", resp::binary>>) do
+    { :ok, :paused, resp }
+  end
+
   def parse(<<"OK ", resp::bytes>>) do
     case parse_body(resp) do
       { :ok, body, rest } ->
@@ -116,6 +125,10 @@ defmodule Beanstalken.Response do
       :more ->
         :more
     end
+  end
+
+  def parse(_) do
+    :more
   end
 
   def parse_body(body) do

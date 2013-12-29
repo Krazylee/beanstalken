@@ -134,4 +134,10 @@ defmodule BeanstalkenTest do
     { :found, _, _ } = :gen_server.call(pid, {:peek, id})
     :not_found = :gen_server.call(pid, {:peek, 99})
   end
+
+  test "handle kick command" do
+    { :ok, pid } = Beanstalken.connect()
+    { :kicked, count } = :gen_server.call(pid, {:kick, 10})
+    assert is_number(count)
+  end
 end
