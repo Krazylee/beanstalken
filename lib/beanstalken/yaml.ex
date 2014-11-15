@@ -17,7 +17,7 @@ defmodule Beanstalken.YAML do
   def parse_header(body) do
     case body do
       <<"---\n", content::binary>> ->
-        { :ok, content } 
+        { :ok, content }
       _ ->
         body
     end
@@ -27,30 +27,50 @@ defmodule Beanstalken.YAML do
     parse_sequence(content, [])
   end
 
-  def parse_sequence(content, acc) when size(content) == 0 do
+  def parse_sequence(content, acc) when byte_size(content) == 0 do
     Enum.reverse acc
   end
 
   def parse_sequence(<<"- ", item::binary>>, acc) do
-    [ value, more_data ] = seperate_items(item, "\n")
-    parse_sequence(more_data, [value|acc])
+    [value | more_data] = seperate_items(item, "\n")
+    parse_sequence(more_data, [value | acc])
+  end
+
+  def parse_sequence([<<"- ", head::binary>> | tail], acc) do
+    parse_sequence(tail, [head | acc])
+  end
+
+  def parse_sequence([], acc) do
+    parse_sequence("", acc)
   end
 
   def seperate_items(item, seperator) do
-    String.split(item, seperator, global: false)
+    String.split(item, seperator, parts: :infinity, trim: true)
   end
 
   def parse_mapping(content) do
     parse_mapping(content, [])
   end
 
-  def parse_mapping(content, acc) when size(content) == 0 do
+  def parse_mapping(content, acc) when byte_size(content) == 0 do
     Enum.reverse acc
   end
 
-  def parse_mapping(content, acc) do
-    [key, data] = seperate_items(content, ": ")
-    [value, more_data] = seperate_items(data, "\n")
-    parse_mapping(more_data, [{binary_to_atom(key), value}|acc])
+  def parse_mapping(content, acc) when is_binary(content) do
+    [pair | items] = seperate_items(content, "\n")
+
+    [key, value] = seperate_items(pair, ": ")
+    parse_mapping(items, [{String.to_atom(key), value} | acc])
+  end
+
+  def parse_mapping([], acc) do
+    parse_mapping("", acc)
+  end
+
+  def parse_mapping(content, acc) when is_list(content) do
+    [pair | items] = content
+
+    [key, value] = seperate_items(pair, ": ")
+    parse_mapping(items, [{String.to_atom(key), value} | acc])
   end
 end

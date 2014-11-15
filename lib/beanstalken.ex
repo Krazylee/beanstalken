@@ -1,5 +1,5 @@
 defmodule Beanstalken do
-  use Application.Behaviour
+  use Application
 
   # See http://elixir-lang.org/docs/stable/Application.Behaviour.html
   # for more information on OTP Applications
@@ -16,7 +16,7 @@ defmodule Beanstalken do
   end
 
   def connect(host) do
-    connect(host, 11300) 
+    connect(host, 11300)
   end
 
   def connect() do

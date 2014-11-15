@@ -9,7 +9,7 @@ defmodule Beanstalken.Command do
   end
 
   def to_command_string(command) when is_tuple(command) do
-    to_command_string(tuple_to_list(command)) 
+    to_command_string(Tuple.to_list(command))
   end
 
   def to_command_string(command) when is_list(command) do
