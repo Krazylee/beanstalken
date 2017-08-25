@@ -4,7 +4,7 @@ defmodule Beanstalken.Mixfile do
   def project do
     [ app: :beanstalken,
       version: "0.0.1",
-      elixir: "~> 0.12.1-dev",
+      elixir: "~> 1.0.0",
       deps: deps ]
   end
 

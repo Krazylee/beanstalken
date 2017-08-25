@@ -1,7 +1,7 @@
 defmodule Beanstalken.Response do
 
   alias Beanstalken.YAML
-  
+
   def recv(socket) do
     recv(socket, "")
   end
@@ -100,7 +100,7 @@ defmodule Beanstalken.Response do
   def parse(<<"TOUCHED\r\n", resp::binary>>) do
     { :ok, :touched, resp }
   end
-  
+
   # watch/ignore responses
   def parse(<<"WATCHING ", resp::binary>>) do
     parse_int(resp, :watching)
@@ -137,7 +137,7 @@ defmodule Beanstalken.Response do
     case parse_digits(body) do
       { :ok, length, <<"\r\n", rest::binary>> } ->
         case rest do
-          <<content::[binary, size(length)], "\r\n", rest2::binary>> ->
+          <<content::binary-size(length), "\r\n", rest2::binary>> ->
             { :ok, content, rest2 }
           _ ->  
             :more
@@ -200,7 +200,7 @@ defmodule Beanstalken.Response do
       <<first, rest::bytes>> when first >= ?0 and first <= ?9 ->
         parse_digits(rest, [first|acc])
       _ ->
-        { :ok, list_to_integer(Enum.reverse(acc)), string}
+        { :ok, List.to_integer(Enum.reverse(acc)), string}
     end
   end
 end
