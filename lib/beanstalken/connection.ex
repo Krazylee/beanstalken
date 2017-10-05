@@ -18,7 +18,11 @@ defmodule Beanstalken.Connection do
     pri = params[:pri]
     delay = params[:delay]
     ttr = params[:ttr]
-    bytes = if params[:bytes], else: byte_size(data)
+    bytes = if params[:bytes] do
+      params[:bytes]
+    else
+      byte_size(data)
+    end
     Command.send(socket, {:put, pri, delay, ttr, bytes}, data)
     { :ok, reply, new_buffer } = Response.recv(socket, buffer)
     { :reply, reply, %{state | buffer: new_buffer} }

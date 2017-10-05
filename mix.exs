@@ -4,8 +4,8 @@ defmodule Beanstalken.Mixfile do
   def project do
     [ app: :beanstalken,
       version: "0.0.1",
-      elixir: "~> 1.0.0",
-      deps: deps ]
+      elixir: "~> 1.5.0",
+      deps: deps() ]
   end
 
   # Configuration for the OTP application
