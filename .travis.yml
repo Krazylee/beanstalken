@@ -1,16 +1,12 @@
-language: erlang
-notifications:
-  recipients:
-    - lixiangstar@gmail.com
-otp_release:
-  - R16B
+language: elixir
+elixir: '1.5'
+otp_release: '19.0'
 before_install:
-  - git clone https://github.com/elixir-lang/elixir
-  - cd elixir && make && cd ..
   - curl -L https://github.com/kr/beanstalkd/archive/v1.9.tar.gz | tar xz -C /tmp
   - cd /tmp/beanstalkd-1.9/
   - make
   - ./beanstalkd &
   - cd $TRAVIS_BUILD_DIR
-before_script: "export PATH=`pwd`/elixir/bin:$PATH"
-script: "MIX_ENV=test mix do deps.get, test"
+notifications:
+  recipients:
+    - lixiangstar@gmail.com
