@@ -1,7 +1,5 @@
 language: elixir
-notifications:
-  recipients:
-    - lixiangstar@gmail.com
+elixir: '1.5'
 otp_release: '19.0'
 before_install:
   - curl -L https://github.com/kr/beanstalkd/archive/v1.9.tar.gz | tar xz -C /tmp
@@ -9,3 +7,6 @@ before_install:
   - make
   - ./beanstalkd &
   - cd $TRAVIS_BUILD_DIR
+notifications:
+  recipients:
+    - lixiangstar@gmail.com
